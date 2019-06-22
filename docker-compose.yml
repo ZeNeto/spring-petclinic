@@ -1,9 +1,36 @@
-mysql:
-  image: mysql:5.7
-  ports:
-    - "3306:3306"
-  environment:
-    - MYSQL_ROOT_PASSWORD=petclinic
-    - MYSQL_DATABASE=petclinic
-  volumes:
-    - "./conf.d:/etc/mysql/conf.d:ro"
+version: "2"
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_petclinic
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=petclinic
+      - MYSQL_DATABASE=petclinic
+    volumes:
+      - "./conf.d:/etc/mysql/conf.d:ro"
+    networks:
+       my_net:
+        ipv4_address: 172.19.0.2
+
+  app:
+    # build: .
+    image: "pc0077/petclinicjn"
+    container_name: petclinicJN
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+     - mysql
+    links:
+     - mysql
+    networks:
+      my_net:
+       ipv4_address: 172.19.0.3
+
+
+networks:
+  my_net:
+    driver: bridge
